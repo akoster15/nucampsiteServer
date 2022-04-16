@@ -7,17 +7,12 @@ const campsiteRouter = express.Router();
 
 campsiteRouter.route('/')
 .get((req, res, next) => {
-    Campsite.findById(req.params.campsiteId)
-    .then(campsite => {
-        if (campsite) {
-            res.statusCode = 200;
-            res.setHeader('Content-Type', 'application/json');
-            res.json(campsite.comments);
-        } else {
-            err = new Error(`Campsite ${req.params.campsiteId} not found`);
-            err.status = 404;
-            return next(err);      
-        }
+    Campsite.find()
+    .populate('comments.author')
+    .then(campsites => {
+        res.statusCode = 200;
+        res.setHeader('Content-Type', 'application/json');
+        res.json(campsites);
     })
     .catch(err => next(err));
 })
@@ -71,20 +66,11 @@ campsiteRouter.route('/')
 campsiteRouter.route('/:campsiteId')
 .get((req, res, next) => {
     Campsite.findById(req.params.campsiteId)
+    .populate('comments.author')
     .then(campsite => {
-        if (campsite && campsite.comments.id(req.params.commentId)) {
-            res.statusCode = 200;
-            res.setHeader('Content-Type', 'application/json');
-            res.json(campsite.comments.id(req.params.commentId));
-        } else if (!campsite) {
-            err = new Error(`Campsite ${req.params.campsiteId} not found`);
-            err.status = 404;
-            return next(err);
-        } else {
-            err = new Error(`Comment ${req.params.commentId} not found`);
-            err.status = 404;
-            return next(err);
-        }
+        res.statusCode = 200;
+        res.setHeader('Content-Type', 'application/json');
+        res.json(campsite);
     })
     .catch(err => next(err));
 })
