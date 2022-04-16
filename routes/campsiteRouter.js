@@ -1,4 +1,3 @@
-
 const express = require('express');
 const Campsite = require('../models/campsite');
 const authenticate = require('../authenticate');
